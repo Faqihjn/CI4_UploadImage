@@ -34,14 +34,15 @@ $routes->setAutoRoute(true);
 $routes->get('/', 'Home::index');
 $routes->resource('product'); // Tambahkan baris ini
 // Equivalent to the following:
-$routes->get('product/new',             'Product::new');
-$routes->post('product',                'Product::create');
-$routes->get('product',                 'Product::index');
-$routes->get('product/(:segment)',      'Product::show/$1');
-$routes->get('product/(:segment)/edit', 'Product::edit/$1');
-$routes->put('product/(:segment)',      'Product::update/$1');
-$routes->patch('product/(:segment)',    'Product::update/$1');
-$routes->delete('product/(:segment)',   'Product::delete/$1');
+$routes->get('todo/new',                    'Todo::new');
+$routes->post('todo',                       'Todo::create');
+$routes->get('todo',                        'Todo::index');
+$routes->get('todo/(:segment)',             'Todo::show/$1');
+$routes->get('todo/(:segment)/edit',        'Todo::edit/$1');
+$routes->put('todo/(:segment)/update',      'Todo::update/$1');
+$routes->patch('todo/(:segment)',           'Todo::update/$1');
+$routes->delete('todo/(:segment)',          'Todo::delete/$1');
+$routes->get('todo/(:segment)/finish',      'Todo::finish/$1');
 
 
 /*

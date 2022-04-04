@@ -4,9 +4,7 @@
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-<link href="{{ asset('/css/main.css') }}" rel="stylesheet">
-
+<link rel="stylesheet" href="/assets/css/main.css">
 <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 
-<title>Todo List | Muhammad Faqih</title>
+<title><?= isset($title) ? $title : "Hello World!" ?></title>

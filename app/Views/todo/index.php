@@ -9,31 +9,33 @@
             <thead>
                 <tr>
                     <td>No.</td>
-                    <td>Name</td>
-                    <td>Stock</td>
-                    <td>Price</td>
-                    <td>Category</td>
+                    <td>Title</td>
+                    <td>Description</td>
+                    <td>Finished at</td>
                     <td>Action</td>
+                    <td>Status</td>
                 </tr>
             </thead>
             <tbody>
-                <a href="/product/new" class="btn btn-primary text-white ">Add new product</a>
+                <a href="/todo/new" class="btn btn-primary text-white ">Add new list</a>
                 <br />
                 <br />
                 <?php $no = 0; ?>
                 <?php foreach ($products as $item): ?>
             <tr>
                 <td><?= $no += 1; ?></td>
-                <td><?= $item['name'] ?></td>
-                <td><?= $item['stock'] ?></td>
-                <td><?= $item['price'] ?></td>
-                <td><?= $item['category'] ?></td>
+                <td><?= $item['title'] ?></td>
+                <td><?= $item['description'] ?></td>
+                <td><?= $item['finished_at'] ?></td>
                 <td>
-                    <a href="/product/<?= $item['id'] ?>/edit" class="btn btn-info text-white "><i class='bx bx-pencil'></i></a>
-                    <form action= "/product/<?= $item['id'] ?>" method="post" onsubmit="return confirm('Are you sure?')" >
+                    <a href="/todo/<?= $item['id'] ?>/edit" class="btn btn-info text-white "><i class='bx bx-pencil'></i></a>
+                    <form action= "/todo/<?= $item['id'] ?>" method="post" onsubmit="return confirm('Are you sure?')" >
                         <input type="hidden" name="_method" value="delete" />
                         <button type="submit" class="btn btn-danger text-white "> <i class='bx bx-trash'></i> </button>
                     </form>
+                </td>
+                <td>
+                    <a href="/todo/<?= $item['id'] ?>/finish" class="btn btn-success text-white" style="height:auto"><?= $item['status'] ?></a>
                 </td>
             </tr>
 
