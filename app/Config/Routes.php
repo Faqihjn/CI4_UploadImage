@@ -32,7 +32,11 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
-$routes->resource('product'); // Tambahkan baris ini
+$routes->group('', ['filter' => 'authMiddleware'], function($routes) {
+    $routes->resource('todo');
+});
+$routes->resource('register');
+$routes->resource('login');
 // Equivalent to the following:
 $routes->get('todo/new',                    'Todo::new');
 $routes->post('todo',                       'Todo::create');
@@ -44,7 +48,7 @@ $routes->patch('todo/(:segment)',           'Todo::update/$1');
 $routes->delete('todo/(:segment)',          'Todo::delete/$1');
 $routes->get('todo/(:segment)/finish',      'Todo::finish/$1');
 
-
+$routes->post('todo/(:segment)/update',      'Todo::update/$1');
 /*
  * --------------------------------------------------------------------
  * Additional Routing

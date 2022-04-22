@@ -4,6 +4,8 @@
 <div class="container mt-5" >
     <div class="row mb-4">
         <div class="col-12">
+            <h5 class="mb-4">Hello <?= session('name') ?> </h5>
+
             <h5 class="mb-4"style="margin-top:20px">Todo List</h5>    
         <table class="table table-hover ">
             <thead>
@@ -12,6 +14,7 @@
                     <td>Title</td>
                     <td>Description</td>
                     <td>Finished at</td>
+                    <td>Photo</td>
                     <td>Action</td>
                     <td>Status</td>
                 </tr>
@@ -27,9 +30,10 @@
                 <td><?= $item['title'] ?></td>
                 <td><?= $item['description'] ?></td>
                 <td><?= $item['finished_at'] ?></td>
+                <td><img src="/photos/<?= $item['photo'] ?>" alt="" width=100 height=100></td>
                 <td>
                     <a href="/todo/<?= $item['id'] ?>/edit" class="btn btn-info text-white "><i class='bx bx-pencil'></i></a>
-                    <form action= "/todo/<?= $item['id'] ?>" method="post" onsubmit="return confirm('Are you sure?')" >
+                    <form action= "/todo/<?= $item['id'] ?>" method="post" onsubmit="return confirm('Are you sure?')" class="d-inline">
                         <input type="hidden" name="_method" value="delete" />
                         <button type="submit" class="btn btn-danger text-white "> <i class='bx bx-trash'></i> </button>
                     </form>
@@ -42,6 +46,9 @@
         <?php endforeach ?>
         </tbody>
     </table>
+    </div>
+    <div>
+    <?= $pager->links('todo', 'custom_pagination') ?> 
     </div>
     </div>
 </div>

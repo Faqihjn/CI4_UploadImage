@@ -9,6 +9,9 @@ class Todo extends ResourceController
 {
     public function __construct() {
         $this->todoModel = new TodoModel();
+
+        
+        
     }
 
     /**
@@ -19,10 +22,12 @@ class Todo extends ResourceController
     public function index()
     {
         
-        $products = $this->todoModel->findAll();
+        $todo = $this->todoModel->paginate(5, 'todo');
 
         $payload = [
-            "products" => $products
+            "products" => $todo,
+            "pager" => $this->todoModel->pager
+
         ];
 
         echo view('todo/index', $payload);
@@ -55,17 +60,46 @@ class Todo extends ResourceController
      */
     public function create()
     {
-        $payload = [
-            "id" => uniqid(),
-            "title" => $this->request->getPost('title'),
-            "description" => $this->request->getPost('description'),
-            "finished_at" => $this->request->getPost('finished_at'),
+    try{    
+        $validate = $this->validate([
+            'title' => 'required|is_unique[todos.title]',
+            'description' => 'required',
             
-        ];
+        ],
+        );
+        if(!$validate) {
+            session()->setFlashData("errors", $this->validator->listErrors());
+            return redirect()->to(previous_url())->withInput();
+        }
+            $fileName = "";
+
+            $photo = $this->request->getFile('photo');
+
+            if ($photo->getError() ==4) {
+                $fileName = 'default.png';
+                
+            }else{
+                $fileName = $photo->getRandomName(); // Mendapatkan nama file baru secara acak
+
+                $photo->move('photos', $fileName); // Memindahkan file ke public/photos dengan nama acak
+            }
+            
+            $payload = [
+                "id" => uniqid(),
+                "title" => $this->request->getPost('title'),
+                "description" => $this->request->getPost('description'),
+                "finished_at" => $this->request->getPost('finished_at'),
+                "photo" => $fileName, // Kita simpan nama filenya saja
+            ];
 
 
-        $this->todoModel->insert($payload);
-        return redirect()->to('/todo');
+            $this->todoModel->insert($payload);
+            return redirect()->to('/todo');
+
+        }catch(\Exception $e)
+        {
+            return redirect()->to(previous_url());
+        }
     }
 
     /**
@@ -80,7 +114,13 @@ class Todo extends ResourceController
         if (!$product) {
             throw new \Exception("Data not found!");   
         }
-        
+        $data = [
+            "id" => uniqid(),
+            "title" => $this->request->getPost('title'),
+            "description" => $this->request->getPost('description'),
+            "finished_at" => $this->request->getPost('finished_at'),
+            "photo" =>$this->request->getPost('photo'), // Kita simpan nama filenya saja
+        ];
         echo view('todo/edit', ["data" => $product]);
     }
 
@@ -90,19 +130,168 @@ class Todo extends ResourceController
      *
      * @return mixed
      */
-    public function update($id = null)
+    
+
+    public function update($id=null)
     {
-        $payload = [
-            "title" => $this->request->getPost('title'),
-            "description" => $this->request->getPost('description'),
-            "finished_at" => $this->request->getPost('finished_at'),
+        try{    
+            $validate = $this->validate([
+                'title' => 'required',
+                'description' => 'required',
+            ],
+            );
+            if(!$validate) {
+                session()->setFlashData("errors", $this->validator->listErrors());
+                return redirect()->to(previous_url())->withInput();
+            }
+                $fileName = "";
+    
+                $photo = $this->request->getFile('photo');
+    
+                if ($photo->getError() ==4) {
+                    $fileName = $this->request->getVar('potolama');
+                    
+                }else{
+                    $fileName = $photo->getRandomName(); // Mendapatkan nama file baru secara acak
+                    $photo->move('photos', $fileName); // Memindahkan file ke public/photos dengan nama acak
+                    if($this->request->getVar('potolama') != 'default.png')
+                    {
+                        unlink('photos/' . $this->request->getVar('potolama'));
+                    }
+                }
+                
+                $payload = [
+                    "id" => uniqid(),
+                    "title" => $this->request->getPost('title'),
+                    "description" => $this->request->getPost('description'),
+                    "finished_at" => $this->request->getPost('finished_at'),
+                    "photo" => $fileName, // Kita simpan nama filenya saja
+                ];
+    
+    
+                $this->todoModel->insert($payload);
+                return redirect()->to('/todo');
+    
+            }catch(\Exception $e)
+            {
+                return redirect()->to(previous_url());
+            }
 
-        ];
+        // $product = $this->todoModel->find($id);
+        // $id =  $this->request->getVar('id');
+        // $file = $this->validate([
+        //     'file' => [
+        //         'uploaded[file]',
+        //     ]
+        // ]);
+        // if (!$file) 
+        // {
+        //     print_r('Masih Error');
+        // } else 
+        // {
+        // $old_filename = $this->request->getvar('potolama'); 
+        // $new_filename = $this->request->getFile('photo'); 
+        
+        // if( isValid($old_filename))
+        // {
+        //     $fileName = $old_filename;
+        //     echo $old_filename;
 
-        $this->todoModel->update($id, $payload);
-        return redirect()->to('/todo');
-    }
+        //     $new_filename = $request->getFile('photo'); 
+        //     if($new_filename == true)
+        //     {
+        //         unlink('photos/',$old_photo);
+        //         $fileName = $new_filename->getRandomName();
+        //         $fileName->move('photos', $fileName);
+        //     }
+        // }else
+        // {
+        //     $fileName = 'default.png';
+        // }
 
+        // $payload = [
+        //         "id" => uniqid(),
+        //         "title" => $this->request->getPost('title'),
+        //         "description" => $this->request->getPost('description'),
+        //         "finished_at" => $this->request->getPost('finished_at'),
+        //         "photo" => $fileName, // Kita simpan nama filenya saja
+        //     ];
+    
+    
+        //     $this->todoModel->update($id,$payload);
+        //     return redirect()->to('/todo');
+        // }
+
+
+        // $fileName ="";
+        // $product = $this->todoModel->find($id);
+        // $id =  $this->request->getVar('id');
+        // $old_photo = $this->request->getVar('potolama');
+        
+        // $photo = $this->request->getFile('photo');
+        
+        
+        //  if ($photo !=null) 
+        // {
+        //     $config['overwrite']    = true;
+        //     $fileName = $photo->getRandomName(); // Mendapatkan nama file baru secara acak
+        //     $photo->move('photos', $fileName); // Memindahkan file ke public/photos dengan nama acak
+
+        //     unlink('photos/',$old_photo);
+        // }
+        //  if($old_photo){
+        //     $fileName = $old_photo;
+        // }
+        
+        // $payload = [
+        //     "id" => uniqid(),
+        //     "title" => $this->request->getPost('title'),
+        //     "description" => $this->request->getPost('description'),
+        //     "finished_at" => $this->request->getPost('finished_at'),
+        //     "photo" => $fileName, // Kita simpan nama filenya saja
+        // ];
+
+
+        // $this->todoModel->update($id,$payload);
+        // return redirect()->to('/todo');
+
+
+
+
+        // $fileName ="";
+        // $product = $this->todoModel->find($id);
+        // $id =  $this->request->getVar('id');
+        // $old_photo = $this->request->getVar('potolama');
+        
+        // $photo = $this->request->getFile('photo');
+
+        // if ($photo !=null) 
+        // {
+        //     $fileName = $photo->getRandomName(); // Mendapatkan nama file baru secara acak
+        //     $photo->move('photos', $fileName); // Memindahkan file ke public/photos dengan nama acak
+
+        //     unlink('photos/',$old_photo);
+        // }
+        //  if($old_photo){
+        //     $fileName = $old_photo;
+        // }
+        
+        // $payload = [
+        //     "id" => uniqid(),
+        //     "title" => $this->request->getPost('title'),
+        //     "description" => $this->request->getPost('description'),
+        //     "finished_at" => $this->request->getPost('finished_at'),
+        //     "photo" => $fileName, // Kita simpan nama filenya saja
+        // ];
+
+
+        // $this->todoModel->update($id,$payload);
+        // return redirect()->to('/todo');
+
+
+        
+
+        }
     /**
      * Delete the designated resource object from the model
      *
@@ -110,6 +299,13 @@ class Todo extends ResourceController
      */
     public function delete($id = null)
     {
+        $product = $this->todoModel->find($id);
+        
+        if($product['photo'] != 'default.png')
+        {
+            unlink('photos/' . $product['photo']);
+        }
+        
         $this->todoModel->delete($id);
         return redirect()->to('/todo');
     }
