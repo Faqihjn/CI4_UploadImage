@@ -169,7 +169,7 @@ class Todo extends ResourceController
                 ];
     
     
-                $this->todoModel->insert($payload);
+                $this->todoModel->update($id,$payload);
                 return redirect()->to('/todo');
     
             }catch(\Exception $e)
